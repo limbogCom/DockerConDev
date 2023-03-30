@@ -1,0 +1,46 @@
+version: "3"
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/var/www/html
+      - ./config/custom.ini:/usr/local/etc/php/conf.d/custom.ini
+      - ./vhosts/myapp.conf:/etc/apache2/sites-available/myapp.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    networks:
+      - myapp-network  
+  db:
+    image: mysql
+    container_name: my-mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: my_password
+      MYSQL_USER: my_user
+      MYSQL_PASSWORD: my_password
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+    ports:
+       - "3306:3306"  
+    networks:
+      - myapp-network   
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: my-phpmyadmin
+    ports:
+      - "8090:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: my_password
+      UPLOAD_LIMIT: 100M
+    depends_on:
+      - db
+    networks:
+      - myapp-network  
+networks:
+  myapp-network:
+    driver: bridge
