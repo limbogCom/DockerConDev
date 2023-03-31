@@ -7,9 +7,11 @@ services:
     volumes:
       - ./src:/var/www/html
       - ./config/custom.ini:/usr/local/etc/php/conf.d/custom.ini
-      - ./vhosts/myapp.conf:/etc/apache2/sites-available/myapp.conf
+      - ./vhosts:/etc/apache2/sites-available/
+      - ./ssl:/etc/apache2/ssl/
     ports:
       - "80:80"
+      - "443:443"
     depends_on:
       - db
     networks:
